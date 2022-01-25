@@ -4,3 +4,4 @@ slock
 *.orig
 *.rej
 *.diff
+.ccls*
