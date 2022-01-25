@@ -1,6 +1,7 @@
 /* user and group to drop privileges to */
 static const char *user  = "nobody";
-static const char *group = "nobody";
+static const char *group = "nogroup";  // use this one for Ubuntu
+//static const char *group = "nobody"; // use this one for Arch Linux
 
 static const char *colorname[NUMCOLS] = {
 	[INIT] =   "black",     /* after initialization */
