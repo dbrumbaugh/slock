@@ -2,6 +2,11 @@ slock - simple screen locker
 ============================
 simple screen locker utility for X.
 
+Tasks to Complete
+-----------------
+1. When using PAM auth, the entire screen is recolored,
+   rather than just the dwm logo. This "seems" like a 
+   simple fix. Worth taking a look at.
 
 Requirements
 ------------
