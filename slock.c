@@ -206,9 +206,6 @@ resizerectangles(struct lock *lock)
 static void
 drawlogo(Display *dpy, struct lock *lock, int color)
 {
-	/*
-	XSetForeground(dpy, lock->gc, lock->colors[BACKGROUND]);
-	XFillRectangle(dpy, lock->drawable, lock->gc, 0, 0, lock->x, lock->y); */
 	lock->drawable = lock->bgmap;
 	XSetForeground(dpy, lock->gc, lock->colors[color]);
 	XFillRectangles(dpy, lock->drawable, lock->gc, lock->rectangles, LENGTH(rectangles));
@@ -260,11 +257,8 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				retval = pam_start(pam_service, hash, &pamc, &pamh);
 				color = PAM;
 				for (screen = 0; screen < nscreens; screen++) {
-					XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[color]);
-					XClearWindow(dpy, locks[screen]->win);
-					XRaiseWindow(dpy, locks[screen]->win);
+					drawlogo(dpy, locks[screen], color);
 				}
-				XSync(dpy, False);
 
 				if (retval == PAM_SUCCESS)
 					retval = pam_authenticate(pamh, 0);
