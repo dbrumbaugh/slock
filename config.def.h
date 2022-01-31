@@ -19,11 +19,13 @@ ResourcePref resources[] = {
 		{ "color0",       STRING,  &colorname[INIT] },
 		{ "color4",       STRING,  &colorname[INPUT] },
 		{ "color1",       STRING,  &colorname[FAILED] },
+		{ "color3",       STRING,  &colorname[CAPS] },
+		{ "color5",       STRING,  &colorname[PAM] },
 };
 
 
 /* treat a cleared input like a wrong password (color) */
-static const int failonclear = 1;
+static const int failonclear = 0;
 
 /* PAM service that's used for authentication */
 static const char* pam_service = "login";
