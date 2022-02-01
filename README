@@ -2,12 +2,10 @@ slock - simple screen locker
 ============================
 simple screen locker utility for X.
 
-Tasks to Complete
------------------
-
 Requirements
 ------------
-In order to build slock you need the Xlib header files.
+In order to build slock you need the Xlib header files. The PAM patch
+integrated also requires the libpam header files (libpam-dev on Ubuntu).
 
 
 Installation
