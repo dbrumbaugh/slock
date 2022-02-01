@@ -184,7 +184,9 @@ gethash(void)
 #endif /* HAVE_SHADOW_H */
 
 	/* pam, store user name */
-	hash = pw->pw_name;
+    if (use_pam)
+        hash = pw->pw_name;
+
 	return hash;
 }
 
@@ -218,7 +220,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
        const char *hash)
 {
 	XRRScreenChangeNotifyEvent *rre;
-	char buf[32];
+	char buf[32], *inputhash;
 	int caps, num, screen, running, failure, oldc, retval;
 	unsigned int len, color, indicators;
 	KeySym ksym;
@@ -254,23 +256,33 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 			case XK_Return:
 				passwd[len] = '\0';
 				errno = 0;
-				retval = pam_start(pam_service, hash, &pamc, &pamh);
-				color = PAM;
-				for (screen = 0; screen < nscreens; screen++) {
-					drawlogo(dpy, locks[screen], color);
-				}
 
-				if (retval == PAM_SUCCESS)
-					retval = pam_authenticate(pamh, 0);
-				if (retval == PAM_SUCCESS)
-					retval = pam_acct_mgmt(pamh, 0);
+                if (use_pam) {
+                    retval = pam_start(pam_service, hash, &pamc, &pamh);
+                    color = PAM;
+                    for (screen = 0; screen < nscreens; screen++) {
+                        drawlogo(dpy, locks[screen], color);
+                    }
 
-				running = 1;
-				if (retval == PAM_SUCCESS)
-					running = 0;
-				else
-					fprintf(stderr, "slock: %s\n", pam_strerror(pamh, retval));
-				pam_end(pamh, retval);
+                    if (retval == PAM_SUCCESS)
+                        retval = pam_authenticate(pamh, 0);
+                    if (retval == PAM_SUCCESS)
+                        retval = pam_acct_mgmt(pamh, 0);
+
+                    running = 1;
+                    if (retval == PAM_SUCCESS)
+                        running = 0;
+                    else
+                        fprintf(stderr, "slock: %s\n", pam_strerror(pamh, retval));
+                    pam_end(pamh, retval);
+                } else {
+                    if (!(inputhash = crypt(passwd, hash)))
+                        fprintf(stderr, "slock: crypt: %s\n", strerror(errno));
+                    else
+                        running = !!strcmp(inputhash, hash);
+                }
+
+
 				if (running) {
 					XBell(dpy, 100);
 					failure = 1;
@@ -539,6 +551,9 @@ main(int argc, char **argv) {
 	/* the contents of hash are used to transport the current user name */
 	hash = gethash();
 	errno = 0;
+
+    if (!use_pam && !crypt("", hash))
+        die("slock: crypt %s\n", strerror(errno));
 
 	if (!(dpy = XOpenDisplay(NULL)))
 		die("slock: cannot open display\n");

@@ -27,6 +27,8 @@ ResourcePref resources[] = {
 /* treat a cleared input like a wrong password (color) */
 static const int failonclear = 0;
 
+static const int use_pam = 0;
+
 /* PAM service that's used for authentication */
 static const char* pam_service = "login";
 
